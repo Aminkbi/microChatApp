@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/aminkbi/microChatApp/api/utils"
-	"github.com/aminkbi/microChatApp/internal/data"
+	"github.com/aminkbi/microChatApp/api/util"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 	"strconv"
 )
@@ -17,39 +15,31 @@ type config struct {
 
 type application struct {
 	config config
-	logger *log.Logger
-	Models data.Models
 }
 
 func main() {
 
 	conf := getConfig()
-
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-
-	err, mongoClient := utils.ConnectMongoDB()
+	util.InitLogger()
+	err, mongoClient := util.ConnectMongoDB()
 	if err != nil {
-		log.Fatal("Can't connect to mongo: ", err)
+		util.Logger.Fatal("Can't connect to mongo: ", err)
 	}
-
-	models := data.NewModels(mongoClient)
 
 	app := &application{
 		config: conf,
-		logger: logger,
-		Models: models,
 	}
 
 	defer func() {
 		if err = mongoClient.Client.Disconnect(context.TODO()); err != nil {
-			log.Fatal(err)
+			util.Logger.Fatal(err)
 		}
 	}()
 
-	log.Println("Server started on :4000")
+	util.Logger.Println("Server started on :4000")
 	err = app.serve()
 	if err != nil {
-		log.Fatal(err)
+		util.Logger.Fatal(err)
 	}
 
 }
@@ -57,22 +47,22 @@ func main() {
 func getConfig() config {
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		util.Logger.Fatal(err)
 	}
 
 	env := os.Getenv("ENVIRONMENT")
 	if env == "" {
-		log.Fatal("Set your 'ENVIRONMENT' environment variable. ")
+		util.Logger.Fatal("Set your 'ENVIRONMENT' environment variable. ")
 	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		log.Fatal("Set your 'PORT' environment variable. ")
+		util.Logger.Fatal("Set your 'PORT' environment variable. ")
 	}
 
 	intPort, err := strconv.Atoi(port)
 	if err != nil {
-		log.Fatal(err)
+		util.Logger.Fatal(err)
 	}
 
 	return config{

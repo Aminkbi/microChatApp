@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aminkbi/microChatApp/api/util"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,7 +21,7 @@ func (app *application) serve() error {
 		WriteTimeout: 30 * time.Second,
 	}
 	// Likewise log a "starting server" message.
-	app.logger.Println("starting server", map[string]string{
+	util.Logger.Println("starting server", map[string]string{
 		"addr": srv.Addr,
 		"env":  app.config.env,
 	})
@@ -39,7 +40,7 @@ func (app *application) serve() error {
 		// Log a message to say that the signal has been caught. Notice that we also
 		// call the String() method on the signal to get the signal name and include it
 		// in the log entry properties.
-		app.logger.Println("shutting down server", map[string]string{
+		util.Logger.Println("shutting down server", map[string]string{
 			"signal": s.String(),
 		})
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -68,7 +69,7 @@ func (app *application) serve() error {
 	}
 	// At this point we know that the graceful shutdown completed successfully and we
 	// log a "stopped server" message.
-	app.logger.Println("stopped server", map[string]string{
+	util.Logger.Println("stopped server", map[string]string{
 		"addr": srv.Addr,
 	})
 	return nil
