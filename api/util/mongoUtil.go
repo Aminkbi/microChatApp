@@ -1,4 +1,4 @@
-package utils
+package util
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"log"
 	"os"
+	"time"
 )
 
 type MongoClient struct {
@@ -16,32 +16,31 @@ type MongoClient struct {
 }
 
 func ConnectMongoDB() (error, *MongoClient) {
-
 	if err := godotenv.Load(); err != nil {
 		return err, nil
 	}
+
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		err := errors.New("set your 'MONGODB_URI' environment variable")
-		if err != nil {
-			return err, nil
-		}
+		return errors.New("set your 'MONGODB_URI' environment variable"), nil
 	}
-	client, err := mongo.Connect(context.TODO(), options.Client().
-		ApplyURI(uri))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return err, nil
 	}
 
-	if err = client.Ping(context.TODO(), readpref.Primary()); err != nil {
+	if err = client.Ping(ctx, readpref.Primary()); err != nil {
 		return err, nil
 	}
-	log.Println("Connected To Mongo")
+
+	Logger.Println("Connected To Mongo")
 
 	return nil, &MongoClient{Client: client}
-
 }
-
 func (m MongoClient) GetCollection(database, collection string) *mongo.Collection {
 	return m.Client.Database(database).Collection(collection)
 }
