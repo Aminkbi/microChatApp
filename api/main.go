@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/aminkbi/microChatApp/api/utils"
+	"github.com/aminkbi/microChatApp/internal/data"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -17,7 +18,7 @@ type config struct {
 type application struct {
 	config config
 	logger *log.Logger
-	mongo  *utils.MongoClient
+	Models data.Models
 }
 
 func main() {
@@ -31,14 +32,16 @@ func main() {
 		log.Fatal("Can't connect to mongo: ", err)
 	}
 
+	models := data.NewModels(mongoClient)
+
 	app := &application{
 		config: conf,
 		logger: logger,
-		mongo:  mongoClient,
+		Models: models,
 	}
 
 	defer func() {
-		if err = app.mongo.Client.Disconnect(context.TODO()); err != nil {
+		if err = mongoClient.Client.Disconnect(context.TODO()); err != nil {
 			log.Fatal(err)
 		}
 	}()

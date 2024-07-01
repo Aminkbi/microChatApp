@@ -1,9 +1,14 @@
 package data
 
 import (
+	"github.com/aminkbi/microChatApp/api/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
+
+type UserModel struct {
+	mongo *utils.MongoClient
+}
 
 // User contains personal information, Username, Email address and PasswordHash.
 // It also contains a CreatedAt to trace the time of user being created.
