@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var ErrDuplicateEmail = errors.New("email already exists")
+var ErrDuplicateCredentials = errors.New("email or username already exists")
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var input data.UserDTO
@@ -45,10 +45,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:    time.Now(),
 	}
 
-	_, err = util.MongoDBClient.GetCollection("micro-chat", "user").InsertOne(context.Background(), newUser)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	coll := util.MongoDBClient.GetCollection("micro-chat", "user")
+	_, err = coll.InsertOne(ctx, newUser)
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
-			badRequestResponse(w, r, errors.New("username or email already exists"))
+			badRequestResponse(w, r, ErrDuplicateCredentials)
 			return
 		}
 		serverErrorResponse(w, r, err)
@@ -68,10 +72,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user data.User
+	coll := util.MongoDBClient.GetCollection("micro-chat", "user")
 	if input.Username != "" {
-		err = util.MongoDBClient.GetCollection("micro-chat", "user").FindOne(context.Background(), bson.M{"username": input.Username}).Decode(&user)
+		err = coll.FindOne(context.Background(), bson.M{"username": input.Username}).Decode(&user)
 	} else if input.Email != "" {
-		err = util.MongoDBClient.GetCollection("micro-chat", "user").FindOne(context.Background(), bson.M{"email": input.Email}).Decode(&user)
+		err = coll.FindOne(context.Background(), bson.M{"email": input.Email}).Decode(&user)
 	}
 	if err != nil {
 		InvalidCredentialsResponse(w, r)

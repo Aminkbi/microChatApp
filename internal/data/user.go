@@ -24,7 +24,7 @@ type UserDTO struct {
 
 func ValidateUserDTO(v *validator.Validator, user *UserDTO) {
 	// Ensure either username or email is provided
-	v.Check(user.Username != "" || user.Email != "", "username or email", "must be provided")
+	v.Check(user.Username != "" || user.Email != "", "username_email", "must be provided")
 
 	// If email is provided, it must be valid
 	if user.Email != "" {

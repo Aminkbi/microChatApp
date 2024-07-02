@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"time"
@@ -24,6 +23,6 @@ func CreateToken(username string) (string, error) {
 	}
 
 	// Print information about the created token
-	fmt.Printf("Token claims added: %+v\n", claims)
+	Logger.Println("Token claims added: %+v\n", claims)
 	return tokenString, nil
 }

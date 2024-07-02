@@ -16,5 +16,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc("POST", "/v1/login", handler.Login)
 	router.HandlerFunc("GET", "/v1/hello", middleware.AuthMiddleware(handler.Hello))
 
+	router.HandlerFunc("GET", "/v1/messages", middleware.AuthMiddleware(handler.ListMessages))
+	router.HandlerFunc("POST", "/v1/messages", middleware.AuthMiddleware(handler.AddMessage))
+
 	return router
 }
