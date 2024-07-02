@@ -20,12 +20,12 @@ func ListMessages(w http.ResponseWriter, r *http.Request) {
 
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 		return
 	}
 
 	if input.RoomId.IsZero() {
-		badRequestResponse(w, r, errors.New("roomId must be provided"))
+		BadRequestResponse(w, r, errors.New("roomId must be provided"))
 		return
 	}
 
@@ -38,7 +38,7 @@ func ListMessages(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	cur, err := coll.Find(ctx, filter, findOptions)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 	defer cur.Close(context.TODO())
@@ -48,20 +48,20 @@ func ListMessages(w http.ResponseWriter, r *http.Request) {
 		var message data.Message
 		err = cur.Decode(&message)
 		if err != nil {
-			serverErrorResponse(w, r, err)
+			ServerErrorResponse(w, r, err)
 			return
 		}
 		messages = append(messages, message)
 	}
 
 	if err = cur.Err(); err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
 	err = util.WriteJSON(w, http.StatusOK, data.Envelope{"messages": messages}, nil)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 	}
 
 }
@@ -72,13 +72,13 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 	}
 
 	v := validator.New()
 
 	if data.ValidateMessageDTO(v, &input); !v.Valid() {
-		failedValidationResponse(w, r, v.Errors)
+		FailedValidationResponse(w, r, v.Errors)
 		return
 	}
 
@@ -89,11 +89,11 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 
 	roomId, err := primitive.ObjectIDFromHex(input.RoomID)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 	}
 	senderId, err := primitive.ObjectIDFromHex(input.SenderID)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 	}
 
 	message := data.Message{
@@ -106,10 +106,10 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 	_, err = coll.InsertOne(ctx, message)
 	if err != nil {
 		//if mongo.IsDuplicateKeyError(err) {
-		//	badRequestResponse(w, r, ErrDuplicateCredentials)
+		//	BadRequestResponse(w, r, ErrDuplicateCredentials)
 		//	return
 		//}
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 

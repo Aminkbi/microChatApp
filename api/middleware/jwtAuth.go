@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"github.com/aminkbi/microChatApp/api/handler"
 	"github.com/aminkbi/microChatApp/api/util"
 	"github.com/golang-jwt/jwt/v5"
@@ -24,7 +25,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return util.SecretKey, nil
 		})
 		if err != nil || !token.Valid {
-			handler.InvalidCredentialsResponse(w, r)
+			handler.BadRequestResponse(w, r, errors.New("token is expired. please login again"))
 			return
 		}
 

@@ -20,20 +20,20 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 		return
 	}
 
 	v := validator.New()
 
 	if data.ValidateUserDTO(v, &input); !v.Valid() {
-		failedValidationResponse(w, r, v.Errors)
+		FailedValidationResponse(w, r, v.Errors)
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
@@ -51,10 +51,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	_, err = coll.InsertOne(ctx, newUser)
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
-			badRequestResponse(w, r, ErrDuplicateCredentials)
+			BadRequestResponse(w, r, ErrDuplicateCredentials)
 			return
 		}
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
@@ -66,7 +66,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 		return
 	}
 
@@ -90,7 +90,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := util.CreateToken(user.Username)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
@@ -98,6 +98,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	headers.Set("Authorization", "Bearer "+token)
 	err = util.WriteJSON(w, http.StatusOK, data.Envelope{"token": token}, headers)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 	}
 }

@@ -21,7 +21,7 @@ func ListRooms(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := coll.Find(ctx, filter)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 	defer cur.Close(context.TODO())
@@ -32,20 +32,20 @@ func ListRooms(w http.ResponseWriter, r *http.Request) {
 		var room data.Room
 		err = cur.Decode(&room)
 		if err != nil {
-			serverErrorResponse(w, r, err)
+			ServerErrorResponse(w, r, err)
 			return
 		}
 		rooms = append(rooms, room)
 	}
 
 	if err = cur.Err(); err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
 	err = util.WriteJSON(w, http.StatusOK, data.Envelope{"rooms": rooms}, nil)
 	if err != nil {
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 	}
 
 }
@@ -56,13 +56,13 @@ func AddRoom(w http.ResponseWriter, r *http.Request) {
 
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
-		badRequestResponse(w, r, err)
+		BadRequestResponse(w, r, err)
 	}
 
 	v := validator.New()
 
 	if data.ValidateRoom(v, &input); !v.Valid() {
-		failedValidationResponse(w, r, v.Errors)
+		FailedValidationResponse(w, r, v.Errors)
 		return
 	}
 
@@ -79,10 +79,10 @@ func AddRoom(w http.ResponseWriter, r *http.Request) {
 	_, err = coll.InsertOne(ctx, room)
 	if err != nil {
 		//if mongo.IsDuplicateKeyError(err) {
-		//	badRequestResponse(w, r, err)
+		//	BadRequestResponse(w, r, err)
 		//	return
 		//}
-		serverErrorResponse(w, r, err)
+		ServerErrorResponse(w, r, err)
 		return
 	}
 
