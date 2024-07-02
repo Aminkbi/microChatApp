@@ -8,7 +8,6 @@ import (
 	"github.com/aminkbi/microChatApp/internal/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
 	"time"
@@ -22,6 +21,7 @@ func ListMessages(w http.ResponseWriter, r *http.Request) {
 	err := util.ReadJSON(w, r, &input)
 	if err != nil {
 		badRequestResponse(w, r, err)
+		return
 	}
 
 	if input.RoomId.IsZero() {
@@ -105,10 +105,10 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 
 	_, err = coll.InsertOne(ctx, message)
 	if err != nil {
-		if mongo.IsDuplicateKeyError(err) {
-			badRequestResponse(w, r, ErrDuplicateCredentials)
-			return
-		}
+		//if mongo.IsDuplicateKeyError(err) {
+		//	badRequestResponse(w, r, ErrDuplicateCredentials)
+		//	return
+		//}
 		serverErrorResponse(w, r, err)
 		return
 	}

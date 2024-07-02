@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/aminkbi/microChatApp/api/util"
 	"github.com/aminkbi/microChatApp/internal/data"
 	"github.com/aminkbi/microChatApp/internal/validator"
@@ -95,11 +94,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Authorization", "Bearer "+token)
-	w.WriteHeader(http.StatusOK)
-}
-
-func Hello(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(string)
-	w.Write([]byte(fmt.Sprintf("Hello, %s!", user)))
+	headers := make(http.Header)
+	headers.Set("Authorization", "Bearer "+token)
+	err = util.WriteJSON(w, http.StatusOK, data.Envelope{"token": token}, headers)
+	if err != nil {
+		serverErrorResponse(w, r, err)
+	}
 }

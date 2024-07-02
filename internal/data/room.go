@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/aminkbi/microChatApp/internal/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
@@ -10,5 +11,9 @@ import (
 type Room struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      string             `bson:"name" json:"name" `
-	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
+	CreatedAt time.Time          `bson:"created_at,omitempty" json:"createdAt,omitempty"`
+}
+
+func ValidateRoom(v *validator.Validator, room *Room) {
+	v.Check(room.Name != "", "name", "must be provided")
 }
