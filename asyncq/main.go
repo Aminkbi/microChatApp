@@ -11,6 +11,11 @@ import (
 
 func main() {
 	util.InitLogger()
+
+	err := util.ConnectMongoDB()
+	if err != nil {
+		util.Logger.Fatal("Can't connect to mongo: ", err)
+	}
 	// Redis connection
 	r := asynq.RedisClientOpt{Addr: "localhost:6379"}
 	client := asynq.NewClient(r)
@@ -22,17 +27,18 @@ func main() {
 	})
 
 	// Register periodic task
-	if _, err := scheduler.Register("@every 10s", task.CreateArchiveMessagesTask()); err != nil {
+	if _, err = scheduler.Register("@every 10s", task.CreateArchiveMessagesTask()); err != nil {
 		util.Logger.Fatalf("could not register archive messages task: %v", err)
 	}
 	util.Logger.Println("Registered archive messages task to run every 10 seconds")
 
-	if _, err := scheduler.Register("@every 10s", task.CreateReportMessagesTask()); err != nil {
+	if _, err = scheduler.Register("@every 10s", task.CreateReportMessagesTask()); err != nil {
 		util.Logger.Fatalf("could not register report messages task: %v", err)
 	}
 	util.Logger.Println("Registered report messages task to run every 10 seconds")
 
-	err := scheduler.Start()
+	err = scheduler.Start()
+	defer scheduler.Shutdown()
 	if err != nil {
 		util.Logger.Fatal(err)
 	}
