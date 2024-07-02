@@ -18,10 +18,10 @@ type application struct {
 }
 
 func main() {
+	util.InitLogger()
 
 	conf := getConfig()
-	util.InitLogger()
-	err, mongoClient := util.ConnectMongoDB()
+	err := util.ConnectMongoDB()
 	if err != nil {
 		util.Logger.Fatal("Can't connect to mongo: ", err)
 	}
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	defer func() {
-		if err = mongoClient.Client.Disconnect(context.TODO()); err != nil {
+		if err = util.MongoDBClient.Client.Disconnect(context.TODO()); err != nil {
 			util.Logger.Fatal(err)
 		}
 	}()
@@ -48,6 +48,11 @@ func getConfig() config {
 
 	if err := godotenv.Load(); err != nil {
 		util.Logger.Fatal(err)
+	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		util.Logger.Fatal("Set your 'JWT_SECRET' environment variable. ")
 	}
 
 	env := os.Getenv("ENVIRONMENT")

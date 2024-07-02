@@ -3,10 +3,11 @@ package util
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"os"
 	"time"
 )
 
-var secretKey = []byte("your-secret-key")
+var SecretKey = []byte(os.Getenv("JWT_SECRET"))
 
 func CreateToken(username string) (string, error) {
 
@@ -17,7 +18,7 @@ func CreateToken(username string) (string, error) {
 		"iat": time.Now().Unix(),                // Issued at
 	})
 
-	tokenString, err := claims.SignedString(secretKey)
+	tokenString, err := claims.SignedString(SecretKey)
 	if err != nil {
 		return "", err
 	}

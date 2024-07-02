@@ -9,8 +9,8 @@ import (
 // It also contains a Timestamp to trace the time of message being created.
 type Message struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Content   string             `bson:"content" json:"content" validate:"required"`
-	SenderID  primitive.ObjectID `bson:"sender_id" json:"sender_id" validate:"required"`
-	RoomID    primitive.ObjectID `bson:"room_id" json:"room_id" validate:"required"`
+	Content   string             `bson:"content" json:"content" `
+	SenderID  primitive.ObjectID `bson:"sender_id" json:"sender_id"`
+	RoomID    primitive.ObjectID `bson:"room_id" json:"room_id" `
 	Timestamp time.Time          `bson:"timestamp,omitempty" json:"timestamp,omitempty"`
 }

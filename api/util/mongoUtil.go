@@ -11,18 +11,22 @@ import (
 	"time"
 )
 
-type MongoClient struct {
+type mongoClient struct {
 	Client *mongo.Client
 }
 
-func ConnectMongoDB() (error, *MongoClient) {
+var MongoDBClient mongoClient
+
+var userCollection *mongo.Collection
+
+func ConnectMongoDB() error {
 	if err := godotenv.Load(); err != nil {
-		return err, nil
+		return err
 	}
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		return errors.New("set your 'MONGODB_URI' environment variable"), nil
+		return errors.New("set your 'MONGODB_URI' environment variable")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -30,17 +34,45 @@ func ConnectMongoDB() (error, *MongoClient) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
-		return err, nil
+		return err
 	}
 
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {
-		return err, nil
+		return err
 	}
 
 	Logger.Println("Connected To Mongo")
 
-	return nil, &MongoClient{Client: client}
+	MongoDBClient = mongoClient{
+		Client: client,
+	}
+
+	//wc := writeconcern.New(writeconcern.WMajority())
+	//userCollection = client.Database("micro-chat", options.Database().SetWriteConcern(wc)).Collection("user")
+	//
+	//// Create unique index for email field
+	//EnsureIndexes()
+
+	return nil
 }
-func (m MongoClient) GetCollection(database, collection string) *mongo.Collection {
+
+//func EnsureIndexes() {
+//	indexModel := mongo.IndexModel{
+//		Keys: bson.M{
+//			"email": 1, // create index on `email` field
+//		},
+//		Options: options.Index().SetUnique(true),
+//	}
+//
+//	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+//	defer cancel()
+//
+//	_, err := userCollection.Indexes().CreateOne(ctx, indexModel)
+//	if err != nil {
+//		log.Fatalf("Could not create index: %v", err)
+//	}
+//}
+
+func (m mongoClient) GetCollection(database, collection string) *mongo.Collection {
 	return m.Client.Database(database).Collection(collection)
 }
