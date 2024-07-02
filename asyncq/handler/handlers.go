@@ -18,11 +18,10 @@ func HandleArchiveMessagesTask(ctx context.Context, t *asynq.Task) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	// Calculate the date 1 minute ago
-	oneMinuteAgo := time.Now().Add(-1 * time.Minute)
+	thirtyDaysAgo := time.Now().AddDate(0, -1, 0)
 
-	// Create a filter to find documents with a timestamp older than 1 minute
-	filter := bson.M{"timestamp": bson.M{"$lt": oneMinuteAgo}}
+	// Create a filter to find documents with a timestamp older than 1 month
+	filter := bson.M{"timestamp": bson.M{"$lt": thirtyDaysAgo}}
 
 	cur, err := coll.Find(ctx, filter)
 	if err != nil {
@@ -96,12 +95,17 @@ func HandleReportMessagesTask(ctx context.Context, t *asynq.Task) error {
 		return nil
 	}
 
+	twentyFourHoursAgo := time.Now().AddDate(0, 0, -1)
+
 	// Iterate over users and count messages
 	for _, user := range users {
-		messageCount, err := messageColl.CountDocuments(ctx, bson.M{"userId": user.ID})
+		messageCount, err := messageColl.CountDocuments(ctx, bson.M{
+			"senderId":  user.ID,
+			"timestamp": bson.M{"$gt": twentyFourHoursAgo}})
 		if err != nil {
 			return err
 		}
+		// TODO:  send this as notification
 		util.Logger.Printf("User ID: %v has sent %d messages\n", user.ID, messageCount)
 	}
 

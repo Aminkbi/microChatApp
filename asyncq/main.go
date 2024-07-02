@@ -4,9 +4,8 @@ import (
 	"github.com/aminkbi/microChatApp/asyncq/handler"
 	"github.com/aminkbi/microChatApp/asyncq/task"
 	"github.com/aminkbi/microChatApp/asyncq/util"
-	"time"
-
 	"github.com/hibiken/asynq"
+	"time"
 )
 
 func main() {
@@ -27,12 +26,12 @@ func main() {
 	})
 
 	// Register periodic task
-	if _, err = scheduler.Register("@every 10s", task.CreateArchiveMessagesTask()); err != nil {
+	if _, err = scheduler.Register("@every 24h", task.CreateArchiveMessagesTask()); err != nil {
 		util.Logger.Fatalf("could not register archive messages task: %v", err)
 	}
 	util.Logger.Println("Registered archive messages task to run every 10 seconds")
 
-	if _, err = scheduler.Register("@every 10s", task.CreateReportMessagesTask()); err != nil {
+	if _, err = scheduler.Register("@every 24h", task.CreateReportMessagesTask()); err != nil {
 		util.Logger.Fatalf("could not register report messages task: %v", err)
 	}
 	util.Logger.Println("Registered report messages task to run every 10 seconds")
