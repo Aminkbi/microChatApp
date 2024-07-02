@@ -17,8 +17,6 @@ type mongoClient struct {
 
 var MongoDBClient mongoClient
 
-var userCollection *mongo.Collection
-
 func ConnectMongoDB() error {
 	if err := godotenv.Load(); err != nil {
 		return err
