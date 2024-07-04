@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aminkbi/microChatApp/asyncq/handler"
 	"github.com/aminkbi/microChatApp/asyncq/task"
-	"github.com/aminkbi/microChatApp/asyncq/util"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"github.com/hibiken/asynq"
 	"time"
 )

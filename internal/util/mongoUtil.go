@@ -45,31 +45,8 @@ func ConnectMongoDB() error {
 		Client: client,
 	}
 
-	//wc := writeconcern.New(writeconcern.WMajority())
-	//userCollection = client.Database("micro-chat", options.Database().SetWriteConcern(wc)).Collection("user")
-	//
-	//// Create unique index for email field
-	//EnsureIndexes()
-
 	return nil
 }
-
-//func EnsureIndexes() {
-//	indexModel := mongo.IndexModel{
-//		Keys: bson.M{
-//			"email": 1, // create index on `email` field
-//		},
-//		Options: options.Index().SetUnique(true),
-//	}
-//
-//	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-//	defer cancel()
-//
-//	_, err := userCollection.Indexes().CreateOne(ctx, indexModel)
-//	if err != nil {
-//		log.Fatalf("Could not create index: %v", err)
-//	}
-//}
 
 func (m mongoClient) GetCollection(database, collection string) *mongo.Collection {
 	return m.Client.Database(database).Collection(collection)

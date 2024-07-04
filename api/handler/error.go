@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/aminkbi/microChatApp/api/util"
 	"github.com/aminkbi/microChatApp/internal/data"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"net/http"
 )
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/aminkbi/microChatApp/api/util"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"github.com/joho/godotenv"
 	"os"
 	"strconv"

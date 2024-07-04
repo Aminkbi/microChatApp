@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aminkbi/microChatApp/api/util"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"net/http"
 	"os"
 	"os/signal"

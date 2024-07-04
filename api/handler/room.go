@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
-	"github.com/aminkbi/microChatApp/api/util"
 	"github.com/aminkbi/microChatApp/internal/data"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"github.com/aminkbi/microChatApp/internal/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
