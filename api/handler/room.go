@@ -24,7 +24,7 @@ func ListRooms(w http.ResponseWriter, r *http.Request) {
 		ServerErrorResponse(w, r, err)
 		return
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
 	var rooms []data.Room
 

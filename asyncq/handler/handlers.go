@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func HandleArchiveMessagesTask(ctx context.Context, t *asynq.Task) error {
+func HandleArchiveMessagesTask(contxt context.Context, t *asynq.Task) error {
 	util.Logger.Printf("Handling archive messages task %v", string(t.Payload()))
 
 	coll := util.MongoDBClient.GetCollection("micro-chat", "message")
 	archiveColl := util.MongoDBClient.GetCollection("micro-chat", "archiveMessage")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(contxt, 10*time.Second)
 	defer cancel()
 
 	thirtyDaysAgo := time.Now().AddDate(0, -1, 0)
@@ -27,10 +27,10 @@ func HandleArchiveMessagesTask(ctx context.Context, t *asynq.Task) error {
 	if err != nil {
 		return err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
 	var messages []interface{}
-	for cur.Next(context.TODO()) {
+	for cur.Next(ctx) {
 		var message data.Message
 		err = cur.Decode(&message)
 		if err != nil {
@@ -65,12 +65,12 @@ func HandleArchiveMessagesTask(ctx context.Context, t *asynq.Task) error {
 	return nil
 }
 
-func HandleReportMessagesTask(ctx context.Context, t *asynq.Task) error {
+func HandleReportMessagesTask(contxt context.Context, t *asynq.Task) error {
 	util.Logger.Printf("Handling report messages task %v", string(t.Payload()))
 	userColl := util.MongoDBClient.GetCollection("micro-chat", "user")
 	messageColl := util.MongoDBClient.GetCollection("micro-chat", "message")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(contxt, 10*time.Second)
 	defer cancel()
 
 	// Fetch all users
@@ -78,10 +78,10 @@ func HandleReportMessagesTask(ctx context.Context, t *asynq.Task) error {
 	if err != nil {
 		return err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
 	var users []data.User
-	for cur.Next(context.TODO()) {
+	for cur.Next(ctx) {
 		var user data.User
 		err = cur.Decode(&user)
 		if err != nil {
