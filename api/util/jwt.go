@@ -8,10 +8,10 @@ import (
 
 var SecretKey = []byte(os.Getenv("JWT_SECRET"))
 
-func CreateToken(username string) (string, error) {
+func CreateToken(userId string) (string, error) {
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": username,                         // Subject (user identifier)
+		"sub": userId,                           // Subject (user identifier)
 		"iss": "micro-chat-app",                 // Issuer
 		"exp": time.Now().Add(time.Hour).Unix(), // Expiration time
 		"iat": time.Now().Unix(),                // Issued at

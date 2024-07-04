@@ -88,7 +88,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := util.CreateToken(user.Username)
+	token, err := util.CreateToken(user.ID.String())
 	if err != nil {
 		ServerErrorResponse(w, r, err)
 		return
