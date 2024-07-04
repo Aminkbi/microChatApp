@@ -29,7 +29,12 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", (*claims)["sub"])
+		sub, err := claims.GetSubject()
+		if err != nil {
+			handler.BadRequestResponse(w, r, err)
+		}
+
+		ctx := context.WithValue(r.Context(), "user", sub)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
