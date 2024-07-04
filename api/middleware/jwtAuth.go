@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/aminkbi/microChatApp/api/handler"
-	"github.com/aminkbi/microChatApp/api/util"
+	"github.com/aminkbi/microChatApp/internal/util"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strings"
