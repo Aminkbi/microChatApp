@@ -3,7 +3,6 @@ package util
 import (
 	"context"
 	"errors"
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -18,9 +17,6 @@ type mongoClient struct {
 var MongoDBClient mongoClient
 
 func ConnectMongoDB() error {
-	if err := godotenv.Load(); err != nil {
-		return err
-	}
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {

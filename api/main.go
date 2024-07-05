@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/aminkbi/microChatApp/internal/util"
-	"github.com/joho/godotenv"
 	"os"
 	"strconv"
 )
@@ -36,7 +35,7 @@ func main() {
 		}
 	}()
 
-	util.Logger.Println("Server started on :4000")
+	util.Logger.Printf("Server started on %s ", os.Getenv("APP_PORT"))
 	err = app.serve()
 	if err != nil {
 		util.Logger.Fatal(err)
@@ -45,10 +44,6 @@ func main() {
 }
 
 func getConfig() config {
-
-	if err := godotenv.Load(); err != nil {
-		util.Logger.Fatal(err)
-	}
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
@@ -60,7 +55,7 @@ func getConfig() config {
 		util.Logger.Fatal("Set your 'ENVIRONMENT' environment variable. ")
 	}
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("APP_PORT")
 	if port == "" {
 		util.Logger.Fatal("Set your 'PORT' environment variable. ")
 	}

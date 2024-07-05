@@ -1,19 +1,58 @@
+version: '1.0.0'
+
 services:
   mongodb:
     image: mongo
     container_name: mongodb
     ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - "27017:27017"
+    env_file:
+      - .env
     volumes:
       - ../data/mongodb:/data/db
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis
     container_name: redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - ../data/redis:/data
+
+  go-app:
+    build:
+      dockerfile: MainDockerfile
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+
+
+  websocket:
+    build:
+      dockerfile: WSDockerfile
+    ports:
+      - "${WEBSOCKET_PORT}:${WEBSOCKET_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+
+
+  asynq:
+    build:
+      dockerfile: ASYNQDockerfile
+    ports:
+      - "${ASYNQ_PORT}:${ASYNQ_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb

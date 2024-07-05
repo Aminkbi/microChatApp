@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/aminkbi/microChatApp/asyncq/handler"
-	"github.com/aminkbi/microChatApp/asyncq/task"
+	"github.com/aminkbi/microChatApp/asynq/handler"
+	"github.com/aminkbi/microChatApp/asynq/task"
 	"github.com/aminkbi/microChatApp/internal/util"
 	"github.com/hibiken/asynq"
 	"time"
@@ -16,7 +16,7 @@ func main() {
 		util.Logger.Fatal("Can't connect to mongo: ", err)
 	}
 	// Redis connection
-	r := asynq.RedisClientOpt{Addr: "localhost:6379"}
+	r := asynq.RedisClientOpt{Addr: "redis:6379"}
 	client := asynq.NewClient(r)
 	defer client.Close()
 

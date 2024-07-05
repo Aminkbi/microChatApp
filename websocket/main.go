@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -167,6 +168,11 @@ func (server *ChatServer) handleMessages(client *Client, room *ChatRoom) {
 
 func main() {
 
+	port := os.Getenv("WEBSOCKET_PORT")
+	if port == "" {
+		util.Logger.Fatal("Please provide WEBSOCKET_PORT in env")
+	}
+
 	util.InitLogger()
 
 	err := util.ConnectMongoDB()
@@ -181,12 +187,13 @@ func main() {
 	r.HandleFunc("/ws/{roomID}", handler.RoomCheck).Methods("POST")
 
 	http.Handle("/", r)
-	util.Logger.Println("Server started on :8080")
-	util.Logger.Fatal(http.ListenAndServe(":8080", nil))
+	util.Logger.Printf("Server started on :%s", port)
+
+	util.Logger.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 func sendMessageToAPI(message Message) error {
-	url := "http://localhost:4000/v1/messages"
+	url := fmt.Sprintf("http://go-app:%s/v1/messages", os.Getenv("APP_PORT"))
 
 	tobeSent := data.MessageDTO{
 		Content:  message.Content,
