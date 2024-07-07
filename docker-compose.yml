@@ -25,6 +25,14 @@ services:
     volumes:
       - ../data/redis:/data
 
+  cache-redis:
+    image: redis
+    container_name: cache-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - ../data/cache-redis:/data
+
   go-app:
     build:
       dockerfile: MainDockerfile

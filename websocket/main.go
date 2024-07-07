@@ -168,12 +168,12 @@ func (server *ChatServer) handleMessages(client *Client, room *ChatRoom) {
 
 func main() {
 
+	util.InitLogger()
+
 	port := os.Getenv("WEBSOCKET_PORT")
 	if port == "" {
 		util.Logger.Fatal("Please provide WEBSOCKET_PORT in env")
 	}
-
-	util.InitLogger()
 
 	err := util.ConnectMongoDB()
 	if err != nil {
